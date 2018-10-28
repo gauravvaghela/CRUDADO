@@ -1,0 +1,76 @@
+﻿@model IEnumerable<BAL.MainProduct>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ProductList</title>
+</head>
+<body>
+    <p>
+        @Html.ActionLink("Create New", "AddProduct","Product")
+    </p>
+
+    <form method="get" action="/Product/ProductList">
+        <input type="search" name="search" id="search" value="" />
+        <input type="submit" name="Submit" value="Search" />
+    </form>                
+    <table class="table">
+        <tr>
+            @*<th>
+                @Html.DisplayNameFor(model => model.Pid)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Cid)
+            </th>*@
+            <th>
+                @Html.ActionLink("ProductName", "ProductList",new { Sorting_Order = ViewBag.SortingProductName })
+            </th>
+            <th>
+                @Html.ActionLink("Price", "ProductList", new { Sorting_Order = ViewBag.SortingPrice })                
+            </th>
+            <th>
+                @Html.ActionLink("Model", "ProductList", new { Sorting_Order = ViewBag.SortingModel })    
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Color)
+            </th>
+            <th></th>
+        </tr>
+    
+    @foreach (var item in Model) {
+        <tr>
+            @*<td>
+                @Html.DisplayFor(modelItem => item.Pid)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Cid)
+            </td>*@
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Model)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Color)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "UpdateProduct", new {  id=item.Pid  }) |
+                @*@Html.ActionLink("Details", "Details", new { id = item.Pid }) |*@
+                @Html.ActionLink("Delete", "Delete", new { id = item.Pid })
+            </td>
+        </tr>
+    }
+    
+    </table>
+</body>
+</html>

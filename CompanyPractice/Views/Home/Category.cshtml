@@ -1,0 +1,42 @@
+﻿@model BAL.MainCategory
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Category</title>
+    <script src="~/scripts/jquery-1.10.2.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                type: "get",
+                url: "/Home/ListCategory",               
+                data: {},
+                contentType: "application/json; charset=utf-8",
+                dataType:"json",
+                success: function (data) {                    
+                    $.each(data, function (i) {
+                        alert(data);
+                        var optionHtml = '<option value="' + data[i].Value + '">' + data[i].Text + '</option>';
+                        $("#ddlCat").append(optionHtml);
+                    });                    
+                },
+                error: function (response) {
+                    alert(response.statusText);
+                }
+            })
+        });
+    </script>
+</head>
+<body>
+    <div>
+        <select id="ddlCat">            
+        </select>
+    </div>
+</body>
+</html>
