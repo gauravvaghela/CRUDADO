@@ -1,0 +1,106 @@
+﻿@{
+    Layout = null;
+}
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>DateDifere</title>    
+    <script src="~/scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/scripts/jquery.validate.min.js"></script>
+    <script>
+        $(function () {
+            var newArray = [];
+            $("#btnSubmit").click(function () {
+                var StartDate1 = $("#date1").val();
+                var StartDate2 = $("#date2").val()
+                var date = {
+                    startdate: StartDate1,
+                    enddate: StartDate2,
+                    Days: $("#select1 :selected").text(),
+                    NumberofDays: $("#select2 :selected").text(),
+                    Monthsforskip: $("#select3 :selected").text()
+                };
+                //alert(date.NumberofDays + " -- " + date.Monthsforskip);
+                $.ajax({
+                    type: "POST",
+                    url: "/TatvaSoft/ThirdSundayOfEachMonth/",
+                    data: JSON.stringify(date),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        //alert(data.length);
+                        //$("#contentDiv").html();
+                        var date1 = [];
+                        $.each(data, function (index, current) {
+                            date1.push(current);
+                        });
+                        //newArray.push(date1);
+                        $("#contentDiv").append("<tr><td> Date Between " + $("#date1").val() + " To " + $("#date2").val() + "</td></tr><tr><td>" + date1 + "</td></tr>")
+                        //$("#contentDiv").html("Date Between = " + StartDate1 + " and " + StartDate2 + "<br/>" + newArray);
+                    },
+                    error: function (error) {
+                        alert(error.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <div>
+        <form action="/" method="post">
+            <table>
+                <tr>
+                    <td>Start Date</td>
+                    <td><input type="date" name="date1" id="date1" /></td>
+                </tr>
+                <tr>
+                    <td>End Date</td>
+                    <td><input type="date" name="date2" id="date2" /></td>
+                </tr>
+                <tr>
+                    <td>Select Days</td>
+                    <td>
+                        <select id="select1">
+                            <option value="1">Monday</option>
+                            <option value="2">Tuesday</option>
+                            <option value="3">Wednesday</option>
+                            <option value="4">Thursday</option>
+                            <option value="5">Friday</option>
+                            <option value="6">Saturday</option>
+                            <option value="7">Sunday</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Select Number of Days</td>
+                    <td>
+                        <select id="select2">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Select Months for skip</td>
+                    <td>
+                        <select id="select3">
+                            <option value="1">1</option>
+                            <option value="2">3</option>
+                            <option value="3">6</option>
+                            <option value="4">12</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            <input type="button" id="btnSubmit" value="Submit" />
+        </form>
+        <table id="contentDiv" border="1"></table>
+    </div>
+</body>
+</html>
+
+
