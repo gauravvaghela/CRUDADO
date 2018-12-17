@@ -11,18 +11,18 @@ namespace BAL
     public class clsCategory
     {
         private DBConnection DbCon = null;
-        public List<MainCategory> ListCatagory()
+        public List<Item> ListCatagory()
         {
             DbCon = new DBConnection();
             try
             {
-                List<MainCategory> Category = new List<MainCategory>();
+                List<Item> Category = new List<Item>();
                 DataTable dtTemp = new DataTable();
                 dtTemp = DbCon.GetCategeory();
                 foreach (DataRow dr in dtTemp.Rows)
                 {
                     Category.Add(
-                        new MainCategory
+                        new Item
                         {
                             cid = Convert.ToInt32(dr["cid"]),
                             CategoryName = Convert.ToString(dr["CategoryName"])

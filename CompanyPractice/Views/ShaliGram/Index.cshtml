@@ -1,0 +1,210 @@
+﻿@model IEnumerable<BAL.ShaligramModel.ItemCore>
+
+@{
+    Layout = null;
+}
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>    
+    <script src="~/scripts/jquery-3.0.0.min.js"></script>
+    <script src="~/scripts/bootstrap.min.js"></script>    
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <script>
+        $(document).ready(function () {
+            $('#lblConfirmOrder').delay(5000).fadeOut('slow');
+            $.ajax({
+                url: "/ShaliGram/GetUser",
+                type: "GET",
+                asynch: false,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (Result) {
+                    $.each(Result, function (key, value) {
+                        $("#optionUser").append($("<option></option>").val(value.UserID).html(value.UserName));
+                    });
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+            $.ajax({
+                url: "/ShaliGram/GetItem",
+                type: "GET",
+                asynch: false,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (Result) {
+                    $.each(Result, function (key, value) {
+                        $("#optionItem").append($("<option></option>").val(value.ItemId).html(value.ItemName));
+                    });
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+            $("#SaveItem").click(function () {
+                var InputValue = new Object();
+                InputValue.ItemName = $("#optionItem option:selected").text();
+                $.ajax({
+                    url: "/ShaliGram/PostItem",
+                    type: "POST",
+                    data: JSON.stringify(InputValue),
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (Result) {
+                        if (Result == "OK") {
+                            setTimeout(function () {
+                                location.reload();
+                            }, 100);
+                        }
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            });
+            $("#txtCoupon").blur(function () {
+                var InputValue = new Object();
+                InputValue.txtCoupon = $("#txtCoupon").val();
+                InputValue.TotalAmmount = parseInt(@ViewBag.Total)
+                if ($("#txtCoupon").val() != null && $("#txtCoupon").val() != "" && $("#txtCoupon").val() != undefined) {
+                    $.ajax({
+                        url: "/ShaliGram/ValidateCoupon",
+                        type: "POST",
+                        data: JSON.stringify(InputValue),
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        success: function (Result) {
+                            if (Result == "OK") {
+                                $("#lblCoupon").removeClass("red").addClass("green").text("Valid Coupon");
+                            }
+                            else {
+                                $("#lblCoupon").removeClass("green").addClass("red").text("Invalid Coupon");
+                            }
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        }
+                    });
+                }
+                else {
+                    if($("#txtCoupon").val() == null || $("#txtCoupon").val() == "" || $("#txtCoupon").val() == undefined) {
+                        $("#lblCoupon").text(" ");
+                    }
+                }
+            });
+            $("#PlaceOrder").click(function () {
+                var InputValue = new Object();
+                InputValue.UserID = $("#optionUser option:selected").val();
+                InputValue.TotalAmmount = parseInt(@ViewBag.Total);
+                InputValue.WithGST = parseInt(@ViewBag.IncludeGST);
+                InputValue.Coupon = $("#txtCoupon").val();
+                $.ajax({
+                    url: "/ShaliGram/PlaceOrder",
+                    type: "POST",
+                    data: JSON.stringify(InputValue),
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (Result) {
+                        if (Result == "OK") {
+                            $("#lblConfirmOrder").text("Please Take Rest...You will get your order after 30 min.")
+                        }
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            });
+            $('#txtCoupon').keydown(function () {
+                if ($("#txtCoupon").val() == null || $("#txtCoupon").val() == "" || $("#txtCoupon").val() == undefined) {
+                    $("#lblCoupon").text(" ");
+                }
+            });
+        });
+    </script>
+    <style>
+        .red {
+            color: red;
+        }
+
+        .green {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="padding-top:50px;">
+        <label id="lblConfirmOrder" style="color:orangered;"></label>
+        <div class="row col-md-4">
+            <table class="table" border="1">
+                <tr>
+                    <td>Select User : </td>
+                    <td><select id="optionUser" class="form-control dropdown"></select></td>
+                </tr>
+                <tr>
+                    <td>Select Item : </td>
+                    <td><select id="optionItem" class="form-control dropdown"></select></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input type="button" id="SaveItem" class="btn btn-danger" value="Save Item" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <table class="table" border="1">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.ItemName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Qty)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Price)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Total)
+                </th>
+                <th>
+                    Action
+                </th>
+            </tr>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ItemName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Qty)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Price)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Total)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", "ShaliGram", null, new { @class = "btn btn-info" /* id=item.PrimaryKey */ }) |
+                        @Html.ActionLink("Delete", "Delete", "ShaliGram", null, new { @class = "btn btn-info" /* id=item.PrimaryKey */ })
+                    </td>
+                </tr>
+            }
+        </table>
+        <p>Enter Coupon : <input type="text" id="txtCoupon" value="" placeholder="Optional..." /></p>
+        <label id="lblCoupon"></label>
+        <h4 style="text-align:right;">
+            Sub Total ==> @ViewBag.Total
+        </h4>
+        <h4 style="color:green;text-align:right;">
+            Including GST ==> @ViewBag.IncludeGST
+        </h4>
+        <input type="button" id="PlaceOrder" value="Take Home Delivery" class="btn btn-info" />
+    </div>
+</body>
+</html>
